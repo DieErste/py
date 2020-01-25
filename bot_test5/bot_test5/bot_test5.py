@@ -33,7 +33,7 @@ class VkBot:
     def parse_community(self, community_name):
         print('парсинг сообщества ' + community_name)
         self.driver.get('{}/{}'.format(self.base_url, community_name))
-        time.sleep(0.5)
+        time.sleep(1)
 
         # определение группа или паблик
 
@@ -50,12 +50,12 @@ class VkBot:
         # скроллинг всего списка пользователей группы
 
         print('скроллинг всего списка пользователей')
-        time.sleep(0.5)
+        time.sleep(1)
         scroll_box = self.driver.find_element_by_xpath('//*[@id="box_layer"]/div[2]')
         last_ht, ht = 0, 1
         while last_ht != ht:
             last_ht = ht
-            time.sleep(0.5)
+            time.sleep(1)
             scroll_box.send_keys(Keys.END)
             ht = scroll_box.size['height']
             #print(str(ht))
@@ -142,14 +142,12 @@ class VkBot:
                     print('не отправить пользователю ' + user)
                 send_followers += [user]
 
-        # запись получателей
+                # запись получателей(сразу переписываем тк программа может быть вырублена руками)
 
-        print('запись получателей')
-        if i > 0:
-            json_string = json.dumps({'response':send_followers})
-            json_file = open(community_name + '_send.json', 'w+')
-            json_file.write(json_string)
-            json_file.close()
+                json_string = json.dumps({'response':send_followers})
+                json_file = open(community_name + '_send.json', 'w+')
+                json_file.write(json_string)
+                json_file.close()
 
 # main
 
@@ -200,6 +198,7 @@ if __name__ == '__main__':
         print('Выберите действие:' + chr(10) +
               '1 - Отправка сообщений(далее будет доступен выбор сообщества)' + chr(10) +
               '2 - Парсинг сообщества(если вы еще не парсили либо надо обновить)' + chr(10) +
+              '3 - Вывести сообщение' + chr(10) +
               '0 - Выход')
         answer = input()
         print(answer)
@@ -209,6 +208,8 @@ if __name__ == '__main__':
         elif answer == '2':
             community_name = input('Введите название сообщества: ')
             vk_bot.parse_community(community_name)
+        elif answer == '3':
+            print(message)
         elif answer == '0':
             ret = True
         else:
